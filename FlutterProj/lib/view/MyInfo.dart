@@ -287,7 +287,7 @@ class MyInfo extends StatelessWidget {
               ),
               SizedBox(height: 10.0),
               Text(
-                '팀 이름',
+                '치 워 줘',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16.0,

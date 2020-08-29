@@ -1,11 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:kopo/kopo.dart';
 import 'package:random_string/random_string.dart';
-import 'package:recycle/model/EmailerModule.dart';
 import 'package:recycle/model/MyHTTPhost.dart';
 
 class signup_text_editing_controller {
@@ -430,7 +430,6 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
                   ),
                 ),
               ),
-              // TODO : 이메일 인증 버튼!!
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
@@ -447,7 +446,7 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
                       onPressed: () {
                         _checkInternetAccess().then((bool onValue) {
                           if (onValue) {
-                            // node emailer(External Library) call
+                            // call node emailer
                             _emailSending(context);
                           } else {
                             showDialog(
@@ -806,7 +805,7 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
 
   // 인증코드가 맞는지 체크하는 메소드.
   Future<bool> checkmyAuthCode() async {
-    return (_comfilm.text == eObj.authenticationCode) ? true : false;
+    return (_comfilm.text == _authcode) ? true : false;
   }
 
   Future<bool> _checkInternetAccess() async {
@@ -837,64 +836,41 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
     return;
   }
 
-  Future<bool> _emailSending(BuildContext context) async {
+  _emailSending(BuildContext context) async {
     _authcode = randomAlpha(6);
+    print('코드값은 ? ' + _authcode);
 
-    // 싱글톤 객체 셋팅
-    eObj.authenticationCode = _authcode;
-    eObj.receipent = _email.text;
-    eObj.ok = false;
-
-    print('코드값은 ? ' + eObj.authenticationCode);
-
-    var nodeEndPoint = httpHost.API_PREFIX;
-
-    await _checkInternetAccess().then((bool onValue) {
-      if (onValue) {
-        http.post(nodeEndPoint, body: {
-          "code": eObj.authenticationCode,
-          "email": eObj.receipent
-        }).then((res) {
-          print(res.statusCode);
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('SUCCESS'),
-                content: Text('이메일을 정상적으로 전송했습니다.'),
-                actions: <Widget>[
-                  FlatButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text('Confirm')),
-                ],
-              );
+    // POST 방식으로 서버에 이메일 전송 요청.
+    var res = await http
+        .post(API_PREFIX + "/create-mailer",
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
             },
-          );
-        }).catchError((err) {
-          print(err);
-        });
-      } else {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('인터넷 연결 오류'),
-              content: Text('인터넷 연결 상태를 확인 바랍니다.'),
-              actions: <Widget>[
-                FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Confirm')),
-              ],
-            );
-          },
-        );
-      }
+            body: jsonEncode(
+                <String, dynamic>{"code": _authcode, "email": _email.text}))
+        .catchError((err) {
+      print(err);
     });
-
-    return eObj.ok;
+    if (res.statusCode == 201) {
+      print(res.statusCode);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('SUCCESS'),
+            content: Text('이메일을 정상적으로 전송했습니다.'),
+            actions: <Widget>[
+              FlatButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Confirm')),
+            ],
+          );
+        },
+      );
+    } else {
+      print("Connection Failed...");
+    }
   }
 }

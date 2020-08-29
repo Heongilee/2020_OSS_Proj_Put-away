@@ -12,20 +12,22 @@
 <script src="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.min.js"></script>
 <!-- bxslider CDN/ -->
 <!-- Firestore CDN -->
-<script src="https://www.gstatic.com/firebasejs/7.2.3/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.19.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/7.2.3/firebase-firestore.js"></script>
 <!-- Firestore CDN/ -->
 <script>
-    firebase.initializeApp({
-        apiKey: "AIzaSyDfLG-WSkckQnW0m95_4Jz2lYH5mAlzIzo",
-        authDomain: "capstone-no5.firebaseapp.com",
-        databaseURL: "https://capstone-no5.firebaseio.com",
-        projectId: "capstone-no5",
-        storageBucket: "capstone-no5.appspot.com",
-        messagingSenderId: "80279008633",
-        appId: "1:80279008633:web:9f59fbcca33ef8a8cdaba8",
-        measurementId: "G-EQ9RSJSGE6"
-    });
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyBv_aBl_tPMG1bifQcNziIKdWi5-WF1PeY",
+    authDomain: "my-oss-proj.firebaseapp.com",
+    databaseURL: "https://my-oss-proj.firebaseio.com",
+    projectId: "my-oss-proj",
+    storageBucket: "my-oss-proj.appspot.com",
+    messagingSenderId: "957707477614",
+    appId: "1:957707477614:web:ed12a480ff348f7fdb7c7f"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
 </script>
 <!-- Firestore CDN/ -->
 <title>강남구청 :: 치워</title>
@@ -66,7 +68,7 @@
       $.ajax({
         type:"POST",
         url : API_PREFIX, //AWS EC2 서버
-        key: "key = firebase-adminsdk-785vu@capstone-no5.iam.gserviceaccount.com",
+        key: "key = firebase-adminsdk-ujqni@my-oss-proj.iam.gserviceaccount.com",
         data : {
           "clientToken" : getClientToken,
         },

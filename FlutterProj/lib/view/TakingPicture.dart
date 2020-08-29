@@ -5,13 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:recycle/model/AccountSnapshot.dart';
+import 'package:recycle/model/MyHTTPhost.dart';
 import 'package:recycle/view/TrashListComfirmation.dart';
-
-const PROTOCOL = "http";
-const IP_ADDRESS = "15.164.123.37";
-const PORT = "3000";
-const ROUTE = "image";
-const API_PREFIX = "$PROTOCOL://$IP_ADDRESS:$PORT/$ROUTE";
 
 class TakingPicture extends StatefulWidget {
   static const routeName = '/TakingPicture';
@@ -266,8 +261,7 @@ class _TakingPictureState extends State<TakingPicture> {
   }
 
   // 딥러닝 결과를 받아올 메소드
-  Future<Map<int, List<String>>> _loadMyDeepLearningModule(
-      BuildContext context) async {
+  Future<Map<int, List<String>>> _loadMyDeepLearningModule(BuildContext context) async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -282,6 +276,7 @@ class _TakingPictureState extends State<TakingPicture> {
       },
     );
 
+    //* 테스트 용도 *
     Map<int, List<String>> _myDeepLearningResults = {
       // 0: ["시계"], // 0번째 사진에서 검출된 객체들은 어항, 이불, 화분, 자전거, 항아리가 있다.
       // 1: ["가방류", "고무통", "러닝머신", "옥매트"], // 1번째 사진에서 검출된 객체들은 다음과 같다.
@@ -295,8 +290,6 @@ class _TakingPictureState extends State<TakingPicture> {
     int tmp_idx;
     String tmp; // res.body를 받아올 임시 변수
     for (File element in _listViewItem) {
-      final String nodeEndPoint = API_PREFIX;
-
       if (element == null) {
         print("어 파일인식 안됨");
         break;
@@ -306,7 +299,7 @@ class _TakingPictureState extends State<TakingPicture> {
 
       print("파일이름 : " + fileName);
 
-      await http.post(nodeEndPoint, body: {
+      await http.post(API_PREFIX + "/image", body: {
         "image": base64Image,
         "name": fileName,
       }).then((res) {

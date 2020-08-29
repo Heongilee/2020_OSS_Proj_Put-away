@@ -1,21 +1,15 @@
-class MyHttp {
-  static final MyHttp _instance = new MyHttp._internal();
-  static final PROTOCOL = "http";
-  static final HOST = "15.164.123.37";
-  static final PORT = "3000";
-  static final ROUTE = "create-mailer";
-  static final _API_PREFIX = "$PROTOCOL://$HOST:$PORT/$ROUTE";
+const PROTOCOL = "http";
+const DOMAIN = '192.168.219.108';
+const PORT = '3000';
+const API_PREFIX = PROTOCOL + "://" + DOMAIN + ":" + PORT;
 
-  //getter
-  get API_PREFIX => _API_PREFIX;
+// class MyHTTPhost {
+//   static final MyHTTPhost _instance = MyHTTPhost._internal();
 
-  factory MyHttp() {
-    return _instance;
-  }
-
-  MyHttp._internal() {
-    // 초기화 코드
-  }
-}
-
-MyHttp httpHost = new MyHttp();
+//   factory MyHTTPhost() {
+//     return _instance;
+//   }
+//   MyHTTPhost._internal() {
+//     // Init
+//   }
+// }

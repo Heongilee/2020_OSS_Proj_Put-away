@@ -8,6 +8,8 @@ import 'package:recycle/view/TakingPicture.dart';
 import 'package:recycle/view/CustomerForm.dart';
 
 // 2020-06-11(21:01) Master
+// adb.exe 경로 -> C:\Users\gjsrl\AppData\Local\Android\Sdk\platform-tools
+// 이 경로에서 adb *  커맨드 먹힘.
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {

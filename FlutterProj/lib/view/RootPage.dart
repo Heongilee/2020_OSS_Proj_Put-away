@@ -52,7 +52,7 @@ class _RootPageState extends State<RootPage> {
             ),
             Padding(padding: EdgeInsets.all(3.0)),
             Text(
-              '팀 이 름',
+              '치 워 줘',
               style: TextStyle(
                 fontSize: 15.0,
               ),
