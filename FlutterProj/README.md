@@ -1,6 +1,6 @@
 # recycle
 
-2020 CapstoneDesign TeamProject Team No.5
+2020 OpenSourceSoftware TeamProject Team Putaway
 
 ## Getting Started
 
