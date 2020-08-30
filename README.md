@@ -8,5 +8,7 @@
 
 -------------------------------------------------------------
 * Flutter 프로젝트 경로 : .\FlutterProj   
-* 웹 사이트 경로 : .\localGovernment_webService   
+* 웹 사이트 경로 : .\FlutterProj\node_server\public\localGovernment_webService   
 * Node.js 경로 : .\FlutterProj\node_server   
+   
+* 웹 페이지 주소 : http://localhost:3000/home
