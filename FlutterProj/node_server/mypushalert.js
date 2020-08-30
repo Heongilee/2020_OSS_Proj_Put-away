@@ -1,17 +1,16 @@
 const mypushalert = (deviceToken) => {
     var admin = require("firebase-admin");
     
-    var serviceAccount = require("./capstone-no5-firebase-adminsdk-785vu-4b40d9a086");
+    var serviceAccount = require("./my-oss-proj-firebase-adminsdk-ujqni-286717e4ba");
     
     if (!admin.apps.length) {
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-      databaseURL: "https://capstone-no5.firebaseio.com"
-    });
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount),
+            databaseURL: "https://my-oss-proj.firebaseio.com"
+          });
     }
 
-
-    var registrationToken = deviceToken;
+    // var registrationToken = deviceToken;
     var payload = {
         notification: {
             title: "치워",
@@ -19,7 +18,7 @@ const mypushalert = (deviceToken) => {
         }
     };
 
-    admin.messaging().sendToDevice(registrationToken, payload)
+    admin.messaging().sendToDevice(deviceToken, payload)
     .then(function (response){
         console.log("Successfully sent message:", response);
     }).catch(function (error){

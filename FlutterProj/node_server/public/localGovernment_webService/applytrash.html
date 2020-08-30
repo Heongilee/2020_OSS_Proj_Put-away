@@ -59,19 +59,17 @@
     const PROTOCOL = "http";
     const DOMAIN = "192.168.219.103"; // cmd -> ipconfig -> IPv4 주소
     const PORT = "3000";
-    const ROUTE = "create-pushalert";
-    const API_PREFIX = PROTOCOL + "://" + DOMAIN + ":" + PORT + "/" + ROUTE;
+    const API_PREFIX = PROTOCOL + "://" + DOMAIN + ":" + PORT;
 
     return docRef.update({
       reserveState : "방문 예정",
     }).then(function(){
-      alert("currentToken : " + getClientToken);
       alert("정상 처리되었습니다.");
 
-      // TODO : FCM 전송하기
+      // TODO : FCM 전송 요청하기
       $.ajax({
         type:"POST",
-        url : API_PREFIX,
+        url : API_PREFIX + "/create-pushalert",
         key: "key = firebase-adminsdk-ujqni@my-oss-proj.iam.gserviceaccount.com",
         data : {
           "clientToken" : getClientToken,
@@ -84,10 +82,10 @@
         // dataType : JSON, //아마도 디폴트 설정 되어 있을 거임.
       }).done(function (){
         // 요청 성공시 호출
-        console.log("push alert success !!");
+        console.log("push alert req success !!");
       }).fail(function (){
         // 요청 실패시 호출
-        console.log("push alert fail !!");
+        console.log("push alert req fail !!");
       }).always(function(){
         // 언제나 항상 실행되는 코드
       });

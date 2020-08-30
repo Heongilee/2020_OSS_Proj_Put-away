@@ -1,15 +1,20 @@
 const http = require('http');
+const path = require('path');
+const static = require('serve-static');
 var expess = require("express");
 var bodyParser = require("body-parser");
 var fs = require("fs");
 var app = expess();
 const mymodule = require("./mynodemailer");
 const myPushalertModule = require("./mypushalert");
+// darknet_no_gpu.exe 경로 지정.
+const ABS_PATH = "C:\\MYGIT\\2020_OpensourceSoftware_Dev\\FlutterProj\\node_server\\";
+const DARKNET_EXEC = "darknet_no_gpu.exe";
 //첫번째 미들웨어 시작, extened : true -> 중첩된 객체표현 허용결정
 
-
-console.log('서버가동중...');
-
+const PORT = 3000;
+app.use(static(path.join(__dirname, 'public/')));
+app.set('port', process.envPORT || PORT);
 app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 app.use(bodyParser.json({ type: 'application/json' }));
 
@@ -19,14 +24,14 @@ app.post("/image", function(req, res) {
   var img = req.body.image;
 
   console.log(name);
-  var realFile = new Buffer(img, "base64");
+  var realFile = Buffer.from(img, "base64");
       // we need rotate Function having a rotation as 90
 
  
     fs.writeFile('data/' + name, realFile,function(err){
  
     const exec = require('child_process').exec;
-    const child = exec('darknet/darknet detector test darknet/cfg/obj.data darknet/cfg/yolov3customtest.cfg darknet/data/yolov3custom_18000.weights data/'+name, (err, stdout, stderr) => {
+    const child = exec(ABS_PATH + DARKNET_EXEC + ' detector test darknet/cfg/obj.data darknet/cfg/yolov3customtest.cfg darknet/data/yolov3custom_18000.weights data/'+name, (err, stdout, stderr) => {
   if (err) {
     throw err;
   }
@@ -97,7 +102,13 @@ app.post("/create-pushalert", async function(req, res){
   res.end("PushAlert Module Done.");
 });
 
-app.listen(3000);
+app.get('/home', function(req, res){
+  res.redirect('localGovernment_webService/index.html')
+});
+
+http.createServer(app).listen(app.get('port'), function(){
+  console.log("서버 가동중... -> " + app.get('port'));
+});
 
 
 /*const http = require('http');

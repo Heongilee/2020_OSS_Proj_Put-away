@@ -3,23 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>80279008633-auvunecg4lc749cghkbttavl83igajal.apps.googleusercontent.com</string>
+	<string>957707477614-kqi4nj1jf87sflm1lf42ls2knciq0l6l.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.80279008633-auvunecg4lc749cghkbttavl83igajal</string>
-	<key>ANDROID_CLIENT_ID</key>
-	<string>80279008633-18jo85mdh315djbmm465jppvl71op3fk.apps.googleusercontent.com</string>
+	<string>com.googleusercontent.apps.957707477614-kqi4nj1jf87sflm1lf42ls2knciq0l6l</string>
 	<key>API_KEY</key>
-	<string>AIzaSyCvA2dwsLdmU8hGXhXC2Ni1LD4FdEQu6To</string>
+	<string>AIzaSyD2U3pN3rZBJBNGI2KqM5apjsIeaZKwUa4</string>
 	<key>GCM_SENDER_ID</key>
-	<string>80279008633</string>
+	<string>957707477614</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.oss.recycle</string>
 	<key>PROJECT_ID</key>
-	<string>capstone-no5</string>
+	<string>my-oss-proj</string>
 	<key>STORAGE_BUCKET</key>
-	<string>capstone-no5.appspot.com</string>
+	<string>my-oss-proj.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,8 +29,8 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:80279008633:ios:b1e61878399c4b70cdaba8</string>
+	<string>1:957707477614:ios:b691638245a74d4fdb7c7f</string>
 	<key>DATABASE_URL</key>
-	<string>https://capstone-no5.firebaseio.com</string>
+	<string>https://my-oss-proj.firebaseio.com</string>
 </dict>
 </plist>

@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:recycle/model/AccountSnapshot.dart';
 
 class ReservationDAO {
@@ -46,8 +45,7 @@ class ReservationDAO {
   }
 
   // Firestorage에 이미지를 업로드 해서 URL String이 담긴 리스트를 반환하는 메솓.
-  Future<List<String>> uploadMyListViewItem(
-      CustomerForm_AccountSnapshot args) async {
+  Future<List<String>> uploadMyListViewItem(CustomerForm_AccountSnapshot args) async {
     List<String> _outputURL = [];
 
     var i = 0;
@@ -121,7 +119,7 @@ class ReservationDTO {
         "reserveId": reserveId,
         "reserveDate":
             "${reserveDate.year.toString().padLeft(4, '0')}-${reserveDate.month.toString().padLeft(2, '0')}-${reserveDate.day.toString().padLeft(2, '0')}",
-        "reserveVisitDate":
+        "reserveVisitDate": 
             "${reserveVisitDate.year.toString().padLeft(4, '0')}-${reserveVisitDate.month.toString().padLeft(2, '0')}-${reserveVisitDate.day.toString().padLeft(2, '0')}",
         "reserveVisitTime": reserveVisitTime,
         "reserveAddress": reserveAddress,
