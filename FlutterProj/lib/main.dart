@@ -3,7 +3,7 @@ import 'package:page_transition/page_transition.dart';
 import 'package:recycle/view/MainPage.dart';
 import 'package:recycle/view/RootPage.dart';
 import 'package:recycle/view/TabPage.dart';
-import 'package:recycle/view/TrashListComfirmation.dart';
+import 'package:recycle/view/TrashListConfirmation.dart';
 import 'package:recycle/view/TakingPicture.dart';
 import 'package:recycle/view/CustomerForm.dart';
 
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         '/MainPage': (BuildContext context) => new MainPage(),
         TakingPicture.routeName: (context) => TakingPicture(),
-        TrashListComfirmation.routeName: (context) => TrashListComfirmation(),
+        TrashListConfirmation.routeName: (context) => TrashListConfirmation(),
         CustomerForm.routeName: (context) => CustomerForm(),
         TabPage.routeName: (context) => TabPage(),
       },

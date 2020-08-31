@@ -1,12 +1,11 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:recycle/controller/TakingPictureController.dart';
 import 'package:recycle/model/AccountSnapshot.dart';
-import 'package:recycle/model/MyHTTPhost.dart';
-import 'package:recycle/view/TrashListComfirmation.dart';
+import 'package:recycle/view/Consts.dart';
+import 'package:recycle/view/TrashListConfirmation.dart';
 
 class TakingPicture extends StatefulWidget {
   static const routeName = '/TakingPicture';
@@ -16,7 +15,6 @@ class TakingPicture extends StatefulWidget {
 }
 
 class _TakingPictureState extends State<TakingPicture> {
-  String serverResponse;
   File _image;
   List<File> _listViewItem = [];
 
@@ -66,8 +64,8 @@ class _TakingPictureState extends State<TakingPicture> {
           children: <Widget>[
             Padding(padding: EdgeInsets.all(24.0)),
             Container(
-              width: 300.0,
-              height: 300.0,
+              width: Consts.takingpicture_image_width,
+              height: Consts.takingpicture_image_height,
               child: (_listViewItem.length == 0)
                   ? Center(
                       child: Image(
@@ -77,7 +75,7 @@ class _TakingPictureState extends State<TakingPicture> {
             Padding(padding: EdgeInsets.all(2.0)),
             Text(
               '● TIP : 이미지를 길게 누르면 사진을 목록에서 삭제 시킬 수 있어요!',
-              textScaleFactor: 0.65,
+              textScaleFactor: Consts.takingpicture_textScaleFactor,
             ),
             Padding(padding: EdgeInsets.all(14.0)),
             SizedBox(
@@ -91,29 +89,15 @@ class _TakingPictureState extends State<TakingPicture> {
                   onPressed: () async {
                     // 사진 촬영이 하나도 안 됐을 경우, 에러 메시지 출력.
                     if (_listViewItem.length == 0) {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('ERROR'),
-                            content: Text('리스트에 사진이 하나도 없습니다. 사진을 촬영해주세요.'),
-                            actions: <Widget>[
-                              FlatButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Confirm')),
-                            ],
-                          );
-                        },
-                      );
+                      takingpictureC.takingpicture_dialogue(context);
                     } else {
                       // 사진이 촬영됐을 경우.
-                      await _loadMyDeepLearningModule(context)
+                      await takingpictureC
+                          .loadMyDeepLearningModule(context, _listViewItem)
                           .then((Map<int, List<String>> myResultStrList) {
                         Navigator.pushNamed(
-                            context, TrashListComfirmation.routeName,
-                            arguments: TrashListComfirmation_AccounSnapshot(
+                            context, TrashListConfirmation.routeName,
+                            arguments: TrashListConfirmation_AccounSnapshot(
                                 args.currentAccount,
                                 _listViewItem,
                                 0,
@@ -258,65 +242,5 @@ class _TakingPictureState extends State<TakingPicture> {
     _listViewItem.forEach((File element) {
       print(element.path);
     });
-  }
-
-  // 딥러닝 결과를 받아올 메소드
-  Future<Map<int, List<String>>> _loadMyDeepLearningModule(BuildContext context) async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            '딥러닝 분석 결과가 나올 때 까지\n 잠시만 기다려 주세요...',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-          ),
-          content: CircularProgressIndicator(), // TODO : SizedBox로 감싸면 줄어듦.
-        );
-      },
-    );
-
-    //* 테스트 용도 *
-    Map<int, List<String>> _myDeepLearningResults = {
-      // 0: ["시계"], // 0번째 사진에서 검출된 객체들은 어항, 이불, 화분, 자전거, 항아리가 있다.
-      // 1: ["가방류", "고무통", "러닝머신", "옥매트"], // 1번째 사진에서 검출된 객체들은 다음과 같다.
-      // 2: ["유리(거울,판유리)", "재봉틀", "화일캐비넷", "피아노", "환풍기", "카페트"],
-      // 3: ["어항", "이불", "화분", "자전거", "항아리"], // 0번째 사진에서 검출된 객체들은 어항, 이불, 화분, 자전거, 항아리가 있다.
-      // 4: ["가방류", "고무통", "러닝머신", "옥매트"], // 1번째 사진에서 검출된 객체들은 다음과 같다.
-      // 5: ["유리(거울,판유리)", "재봉틀", "화일캐비넷", "피아노", "환풍기", "카페트"]
-    };
-
-    // !-------------------- AWS EC2 서버 가동중일때만 가능. ---------------------
-    int tmp_idx;
-    String tmp; // res.body를 받아올 임시 변수
-    for (File element in _listViewItem) {
-      if (element == null) {
-        print("어 파일인식 안됨");
-        break;
-      }
-      String base64Image = base64Encode(element.readAsBytesSync());
-      String fileName = element.path.split("/").last;
-
-      print("파일이름 : " + fileName);
-
-      await http.post(API_PREFIX + "/image", body: {
-        "image": base64Image,
-        "name": fileName,
-      }).then((res) {
-        print(res.body);
-        print("상태코드 : ");
-        print(res.statusCode);
-        tmp = res.body;
-
-        List<String> response_list = tmp.split(",");
-        _myDeepLearningResults
-            .addAll({_myDeepLearningResults.length: response_list});
-      }).catchError((err) {
-        print(err);
-      });
-    }
-    // !------------------------------------------------------------------------
-
-    return _myDeepLearningResults;
   }
 }

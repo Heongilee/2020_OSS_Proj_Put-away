@@ -1,154 +1,73 @@
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-
-import 'TakingPicture.dart';
+import 'package:recycle/controller/TrashListConfirmationController.dart';
+import 'package:recycle/view/TakingPicture.dart';
 import 'package:flutter/material.dart';
 import 'package:recycle/view/CustomerForm.dart';
 import 'package:recycle/model/WasteListAsset.dart';
 import 'package:recycle/model/AccountSnapshot.dart';
 
-class TrashListComfirmation extends StatefulWidget {
+class TrashListConfirmation extends StatefulWidget {
   static const routeName = '/TrashListComfirmation'; // 외부 모듈 수행 결과를 받아와서 출력할 것.
 
   @override
-  _TrashListComfirmationState createState() => _TrashListComfirmationState();
+  _TrashListConfirmationState createState() => _TrashListConfirmationState();
 }
 
-class _TrashListComfirmationState extends State<TrashListComfirmation> {
-  // 사용자가 선택한 _myTrashListSet -> _selectedListItem
-  //! FIXME : args.selectedListItem 으로 받아올 것!
-  Set<Map<String, String>> _selectedListItem = {};
-
-  // 이전 페이지 인자를 불러오고나서 초기화 하기위한 변수.
-  bool subInitState_flag;
-
-  // 강남구청 폐기물 분류 클래스
-  WasteListAsset waste_obj;
-
+class _TrashListConfirmationState extends State<TrashListConfirmation> {
   File _image;
-
-  // * 딥러닝 분석 결과를 리스트형태로 가져올 것임.
-  List<String> _currentResult = ["제품 목록을 선택하세요."]; // 제품 목록
-  List<String> _detailProduct = ["상세 목록을 선택하세요."]; // 상세 목록
-
-  // DropdownMenu에 들어갈 아이템들이 DropdownMenuItem<String>타입으로 담긴 리스트.
-  List<DropdownMenuItem<String>> _dropDownMenuItems_Product;
-  List<DropdownMenuItem<String>> _dropDownMenuItems_Detail;
-
-  // 현재 DropdownMenuItem이 선택된 값.
-  String _currentProduct;
-  String _currentDetail;
-  bool toggleValue = false;
 
   @override
   void initState() {
-    subInitState_flag = false;
-    waste_obj = new WasteListAsset();
+    trashlistconfirmationC.subInitState_flag = false;
+    trashlistconfirmationC.waste_obj = new WasteListAsset();
 
-    _dropDownMenuItems_Detail = new List();
-    _dropDownMenuItems_Detail.add(new DropdownMenuItem(
-        value: _detailProduct[0], child: Text(_detailProduct[0])));
-    _currentDetail = _dropDownMenuItems_Detail[0].value;
+    trashlistconfirmationC.dropDownMenuItems_Detail = new List();
+    trashlistconfirmationC.dropDownMenuItems_Detail.add(new DropdownMenuItem(
+        value: trashlistconfirmationC.detailProduct[0],
+        child: Text(trashlistconfirmationC.detailProduct[0])));
+    trashlistconfirmationC.currentDetail =
+        trashlistconfirmationC.dropDownMenuItems_Detail[0].value;
 
     super.initState();
-  }
-
-  //제품 목록
-  List<DropdownMenuItem<String>> getDropDownMenuItems_Product(
-      List<String> myDeepLearningResults) {
-    //DropdownMenu에 추가시킬 items 리스트 선언. (이를 반환 시킬 것임.)
-    List<DropdownMenuItem<String>> items = new List();
-    //같은 객체 중복 방지 리스트
-    List<String> incheck = new List();
-
-    for (String i in myDeepLearningResults) {
-      // TODO : 만약 "noDetected" 결과라면...?
-      if (i == "noDetected") {
-        items.add(new DropdownMenuItem(value: i, child: Text(i)));
-        break;
-      }
-      // 딥러닝 결과와 매칭된 폐기물 품목 리스트만 items에 add 시킬 것.
-      else if (WasteListAsset().trashList.containsKey(i) &&
-          !incheck.contains(i)) {
-        incheck.add(i);
-        items.add(new DropdownMenuItem(
-            value: i, child: Text(WasteListAsset().trashList[i].koreaname)));
-      }
-      // end user가 제품 목록을 선택하기 전에 띄울 콤보박스 아이템
-      else if (i == "제품 목록을 선택하세요." && !incheck.contains(i)) {
-        incheck.add(i);
-        items.add(new DropdownMenuItem(value: i, child: Text(i)));
-      }
-    }
-
-    return items;
-  }
-
-  //상세목록
-  List<DropdownMenuItem<String>> getDropDownMenuItems_Detail(
-      String selectedItem) {
-    List<DropdownMenuItem<String>> items = [
-      new DropdownMenuItem(
-          value: "상세 목록을 선택하세요.", child: new Text("상세 목록을 선택하세요."))
-    ];
-
-    if (_currentProduct == "noDetected") {
-      items.add(new DropdownMenuItem(
-          value: "noDetected", child: new Text("noDetected")));
-    } else {
-      // selectedItem(제품 목록)의 상세 목록(detailWaste)을 for문으로 순회하면서...
-      for (String i in WasteListAsset().trashList[selectedItem].detailWaste) {
-        // DropdownMenuItem에 추가시킨다.
-        items.add(new DropdownMenuItem(value: i, child: new Text(i)));
-      }
-    }
-    return items;
   }
 
   //제품 목록 변화
   void changedDropDownProductItem(String selectedItem) {
     setState(() {
       //제품 목록이 선택 되면 ...
-      _currentProduct = selectedItem;
+      trashlistconfirmationC.currentProduct = selectedItem;
 
       //상세 목록 콤보박스 아이템을 동적 생성 한다.
-      _dropDownMenuItems_Detail = getDropDownMenuItems_Detail(selectedItem);
-      _currentDetail = _dropDownMenuItems_Detail[0].value;
+      trashlistconfirmationC.dropDownMenuItems_Detail =
+          trashlistconfirmationC.getDropDownMenuItems_Detail(selectedItem);
+      trashlistconfirmationC.currentDetail =
+          trashlistconfirmationC.dropDownMenuItems_Detail[0].value;
     });
   }
 
   //상세목록 변화
   void changedDropDownDetailItem(String selectedItem) {
-    if (_currentProduct == "제품 목록을 선택하세요." || selectedItem == "상세 목록을 선택하세요.")
-      return;
+    if (trashlistconfirmationC.currentProduct == "제품 목록을 선택하세요." ||
+        selectedItem == "상세 목록을 선택하세요.") return;
 
     setState(() {
-      _currentDetail = selectedItem;
+      trashlistconfirmationC.currentDetail = selectedItem;
 
-      _addMyTrashListItem();
-      _currentProduct = _dropDownMenuItems_Product[0].value;
-      _currentDetail = _dropDownMenuItems_Detail[0].value;
+      trashlistconfirmationC.addMyTrashListItem();
+      trashlistconfirmationC.currentProduct =
+          trashlistconfirmationC.dropDownMenuItems_Product[0].value;
+      trashlistconfirmationC.currentDetail =
+          trashlistconfirmationC.dropDownMenuItems_Detail[0].value;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final TrashListComfirmation_AccounSnapshot args =
+    final TrashListConfirmation_AccounSnapshot args =
         ModalRoute.of(context).settings.arguments;
-
-    // subInitState : route를 통해 arguments 들이 들어오고 나서 콤보박스 리스트를 활성화 시킬 것임.
-    if (subInitState_flag == false) {
-      subInitState_flag = true;
-
-      _selectedListItem = args.selectedListItem;
-
-      // 현재 인덱스의 딥러닝 분석 결과를(List<String>) 가져오고,
-      _currentResult.addAll(args.myDeepLearningResultStr[args.current_Idx]);
-      // 제품 목록 콤보박스에 추가시킨다.
-      _dropDownMenuItems_Product = getDropDownMenuItems_Product(_currentResult);
-      // 현재 제품목록 인덱스를 0번으로 셋팅한다.
-      _currentProduct = _dropDownMenuItems_Product[0].value;
-    }
+    // args 를 받아 콤보박스 초기화
+    trashlistconfirmationC.active_comboboxList(args);
 
     return Scaffold(
       resizeToAvoidBottomPadding: false,
@@ -176,7 +95,7 @@ class _TrashListComfirmationState extends State<TrashListComfirmation> {
     );
   }
 
-  Widget _buildBody(TrashListComfirmation_AccounSnapshot args) {
+  Widget _buildBody(TrashListConfirmation_AccounSnapshot args) {
     return SafeArea(
       child: SingleChildScrollView(
         child: Center(
@@ -197,7 +116,7 @@ class _TrashListComfirmationState extends State<TrashListComfirmation> {
                       width: 50.0,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20.0),
-                          color: toggleValue
+                          color: trashlistconfirmationC.toggleValue
                               ? Colors.greenAccent[100]
                               : Colors.redAccent[100].withOpacity(0.5)),
                       child: Stack(children: <Widget>[
@@ -205,8 +124,9 @@ class _TrashListComfirmationState extends State<TrashListComfirmation> {
                           duration: Duration(milliseconds: 500),
                           curve: Curves.easeIn,
                           top: 3.0,
-                          left: toggleValue ? 25.0 : 0.0,
-                          right: toggleValue ? 0.0 : 25.0,
+                          left: trashlistconfirmationC.toggleValue ? 25.0 : 0.0,
+                          right:
+                              trashlistconfirmationC.toggleValue ? 0.0 : 25.0,
                           child: InkWell(
                             onTap: () {
                               _toggleButton(args);
@@ -218,7 +138,7 @@ class _TrashListComfirmationState extends State<TrashListComfirmation> {
                                 return RotationTransition(
                                     child: child, turns: animation);
                               },
-                              child: toggleValue
+                              child: trashlistconfirmationC.toggleValue
                                   ? Icon(Icons.check_circle,
                                       color: Colors.green,
                                       size: 25.0,
@@ -256,8 +176,8 @@ class _TrashListComfirmationState extends State<TrashListComfirmation> {
                     color: Colors.grey[200],
                   ),
                   child: DropdownButton(
-                    value: _currentProduct,
-                    items: _dropDownMenuItems_Product,
+                    value: trashlistconfirmationC.currentProduct,
+                    items: trashlistconfirmationC.dropDownMenuItems_Product,
                     onChanged: changedDropDownProductItem,
                   ),
                 ),
@@ -273,8 +193,8 @@ class _TrashListComfirmationState extends State<TrashListComfirmation> {
                     color: Colors.grey[200],
                   ),
                   child: DropdownButton(
-                    value: _currentDetail,
-                    items: _dropDownMenuItems_Detail,
+                    value: trashlistconfirmationC.currentDetail,
+                    items: trashlistconfirmationC.dropDownMenuItems_Detail,
                     onChanged: changedDropDownDetailItem,
                   ),
                 ),
@@ -321,7 +241,8 @@ class _TrashListComfirmationState extends State<TrashListComfirmation> {
                                         fontSize: 20.0)),
                         onPressed: () {
                           // TODO : 제품목록이나 상세목록을 선택하지 않았을 경우 에러메시지 출력하기.
-                          if (_selectedListItem.length == 0) {
+                          if (trashlistconfirmationC.selectedListItem.length ==
+                              0) {
                             // * 제품 목록을 다시 선택하세요.
                             showDialog(
                               context: context,
@@ -344,14 +265,17 @@ class _TrashListComfirmationState extends State<TrashListComfirmation> {
                             if (args.current_Idx + 1 ==
                                 args.listViewItem.length) {
                               // TrashListConfirmation.dart -> CustomerForm.dart
-                              args.selectedListItem.addAll(_selectedListItem);
+                              args.selectedListItem.addAll(
+                                  trashlistconfirmationC.selectedListItem);
 
                               args.selectedListItem.forEach((Map trashProduct) {
-                                int temp_idx = waste_obj
+                                int temp_idx = trashlistconfirmationC
+                                    .waste_obj
                                     .trashList[trashProduct.keys.first]
                                     .detailWaste
                                     .indexOf(trashProduct.values.first);
-                                args.totalPrice += waste_obj
+                                args.totalPrice += trashlistconfirmationC
+                                    .waste_obj
                                     .trashList[trashProduct.keys.first]
                                     .wastePrice
                                     .elementAt(temp_idx);
@@ -366,26 +290,13 @@ class _TrashListComfirmationState extends State<TrashListComfirmation> {
                                       args.totalPrice));
                             } else {
                               // TrashListConfirmation.dart(현재 인덱스) -> TrashListConfirmation.dart(다음 인덱스)
-                              args.selectedListItem.addAll(_selectedListItem);
-
-                              // if (!waste_obj.trashList
-                              //     .containsKey(_currentProduct)) {
-                              //   args.totalPrice += 0;
-                              // } else {
-                              //   // // TODO : 최종 가격 합산 하기
-                              //   // int temp_idx = waste_obj
-                              //   //     .trashList[_currentProduct].detailWaste
-                              //   //     .indexOf(_currentDetail);
-                              //   // args.totalPrice += waste_obj
-                              //   //     .trashList[_currentProduct].wastePrice
-                              //   //     .elementAt(temp_idx);
-                              //   // print('${args.totalPrice}');
-                              // }
+                              args.selectedListItem.addAll(
+                                  trashlistconfirmationC.selectedListItem);
 
                               Navigator.pushNamed(
-                                  context, TrashListComfirmation.routeName,
+                                  context, TrashListConfirmation.routeName,
                                   arguments:
-                                      TrashListComfirmation_AccounSnapshot(
+                                      TrashListConfirmation_AccounSnapshot(
                                           args.currentAccount,
                                           args.listViewItem,
                                           args.current_Idx + 1,
@@ -405,7 +316,7 @@ class _TrashListComfirmationState extends State<TrashListComfirmation> {
     );
   }
 
-  Future _getImage(TrashListComfirmation_AccounSnapshot args) async {
+  Future _getImage(TrashListConfirmation_AccounSnapshot args) async {
     showDialog(
         context: context,
         barrierDismissible: true,
@@ -459,20 +370,9 @@ class _TrashListComfirmationState extends State<TrashListComfirmation> {
         });
   }
 
-  // 제품 목록, 상세 목록 아이템 리스트에 넣기 위한 메소드
-  void _addMyTrashListItem() {
-    if (_currentProduct == "noDetected" || _currentDetail == "noDetected") {
-      // nothing...
-    } else {
-      _selectedListItem.add({_currentProduct: _currentDetail});
-    }
-
-    return;
-  }
-
-  Widget _buildListView(TrashListComfirmation_AccounSnapshot args) {
+  Widget _buildListView(TrashListConfirmation_AccounSnapshot args) {
     return ListView.builder(
-      itemCount: _selectedListItem.length * 2,
+      itemCount: trashlistconfirmationC.selectedListItem.length * 2,
       itemBuilder: (context, index) {
         if (index.isOdd) {
           return Divider();
@@ -486,18 +386,21 @@ class _TrashListComfirmationState extends State<TrashListComfirmation> {
   }
 
   Widget _buildListItem(
-      TrashListComfirmation_AccounSnapshot args, int realIdx) {
-    Map listItemMap = _selectedListItem.toList()[realIdx];
-    int temp_idx = waste_obj.trashList[listItemMap.keys.first].detailWaste
+      TrashListConfirmation_AccounSnapshot args, int realIdx) {
+    Map listItemMap = trashlistconfirmationC.selectedListItem.toList()[realIdx];
+    int temp_idx = trashlistconfirmationC
+        .waste_obj.trashList[listItemMap.keys.first].detailWaste
         .indexOf(listItemMap.values.first);
-    int temp_price = waste_obj.trashList[listItemMap.keys.first].wastePrice
+    int temp_price = trashlistconfirmationC
+        .waste_obj.trashList[listItemMap.keys.first].wastePrice
         .elementAt(temp_idx);
 
     return Card(
       child: ListTile(
         isThreeLine: true,
         title: Text(
-          waste_obj.trashList[listItemMap.keys.first].koreaname,
+          trashlistconfirmationC
+              .waste_obj.trashList[listItemMap.keys.first].koreaname,
           textScaleFactor: 1.5,
         ),
         subtitle: Column(
@@ -511,15 +414,15 @@ class _TrashListComfirmationState extends State<TrashListComfirmation> {
           icon: Icon(Icons.remove_circle),
           onPressed: () {
             setState(() {
-              _selectedListItem.remove(listItemMap);
+              trashlistconfirmationC.selectedListItem.remove(listItemMap);
             });
 
             // 신청 목록에서 삭제시키면 가격도 같이 차감.
-            int temp_index = waste_obj
-                .trashList[listItemMap.keys.first].detailWaste
+            int temp_index = trashlistconfirmationC
+                .waste_obj.trashList[listItemMap.keys.first].detailWaste
                 .indexOf(listItemMap.values.first);
-            args.totalPrice -= waste_obj
-                .trashList[listItemMap.keys.first].wastePrice
+            args.totalPrice -= trashlistconfirmationC
+                .waste_obj.trashList[listItemMap.keys.first].wastePrice
                 .elementAt(temp_index);
           },
         ),
@@ -527,29 +430,32 @@ class _TrashListComfirmationState extends State<TrashListComfirmation> {
     );
   }
 
-  void _toggleButton(TrashListComfirmation_AccounSnapshot args) {
+  void _toggleButton(TrashListConfirmation_AccounSnapshot args) {
     setState(() {
-      toggleValue = !toggleValue;
+      trashlistconfirmationC.toggleValue = !trashlistconfirmationC.toggleValue;
       List<String> myWasteKeys = new List();
-      waste_obj.trashList.keys.forEach((String element) {
+      trashlistconfirmationC.waste_obj.trashList.keys.forEach((String element) {
         myWasteKeys.add(element);
       });
-      if (toggleValue) {
-        _currentResult.clear();
-        _currentResult.add("제품 목록을 선택하세요.");
-        _currentResult.addAll(myWasteKeys);
+      if (trashlistconfirmationC.toggleValue) {
+        trashlistconfirmationC.currentResult.clear();
+        trashlistconfirmationC.currentResult.add("제품 목록을 선택하세요.");
+        trashlistconfirmationC.currentResult.addAll(myWasteKeys);
 
-        _dropDownMenuItems_Product =
-            getDropDownMenuItems_Product(_currentResult);
-        _currentProduct = _dropDownMenuItems_Product[0].value;
+        trashlistconfirmationC.dropDownMenuItems_Product =
+            trashlistconfirmationC.getDropDownMenuItems_Product(trashlistconfirmationC.currentResult);
+        trashlistconfirmationC.currentProduct =
+            trashlistconfirmationC.dropDownMenuItems_Product[0].value;
       } else {
-        _currentResult.clear();
-        _currentResult.add("제품 목록을 선택하세요.");
-        _currentResult.addAll(args.myDeepLearningResultStr[args.current_Idx]);
+        trashlistconfirmationC.currentResult.clear();
+        trashlistconfirmationC.currentResult.add("제품 목록을 선택하세요.");
+        trashlistconfirmationC.currentResult
+            .addAll(args.myDeepLearningResultStr[args.current_Idx]);
 
-        _dropDownMenuItems_Product =
-            getDropDownMenuItems_Product(_currentResult);
-        _currentProduct = _dropDownMenuItems_Product[0].value;
+        trashlistconfirmationC.dropDownMenuItems_Product =
+            trashlistconfirmationC.getDropDownMenuItems_Product(trashlistconfirmationC.currentResult);
+        trashlistconfirmationC.currentProduct =
+            trashlistconfirmationC.dropDownMenuItems_Product[0].value;
       }
     });
   }

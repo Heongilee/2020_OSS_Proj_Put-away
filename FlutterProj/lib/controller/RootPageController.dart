@@ -9,16 +9,6 @@ import 'package:recycle/controller/AccessMyFirestore.dart';
 
 class RootPageController {
   bool _isAlreadyLogined;
-  static final RootPageController _singleton =
-      new RootPageController._internal();
-
-  factory RootPageController() {
-    return _singleton;
-  }
-
-  RootPageController._internal() {
-    _isAlreadyLogined = false;
-  }
 
   Future<void> delaying(BuildContext context) async {
     await Future.delayed(Duration(milliseconds: 1500));

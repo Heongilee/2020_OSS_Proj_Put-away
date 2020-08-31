@@ -5,9 +5,11 @@ class AccessMyFirestore {
       new AccessMyFirestore._internal(); // 팩토리 생성자에서 이미 존재하는 것을 사용하도록 한다.
   final _db = Firestore.instance;
   DocumentSnapshot _currentDoc;
+  QuerySnapshot _currentQs;
 
   //getter
   DocumentSnapshot get currentDoc => _currentDoc;
+  QuerySnapshot get currentQs => _currentQs;
   get db => _db;
 
   //setter

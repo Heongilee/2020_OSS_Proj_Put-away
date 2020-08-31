@@ -1,5 +1,6 @@
 import 'package:recycle/controller/FluttertoastPlugin.dart';
 import 'package:recycle/controller/MainPageController.dart';
+import 'package:recycle/view/FindAccount.dart';
 import 'package:recycle/view/SignUp.dart';
 import 'package:flutter/material.dart';
 
@@ -188,7 +189,8 @@ class _MainPageState extends State<MainPage>
                   style: TextStyle(decoration: TextDecoration.underline),
                 ),
                 onTap: () {
-                  print('Forget your ID or password?');
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => FindAccount()));
                 },
               ),
             ),

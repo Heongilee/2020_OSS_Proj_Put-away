@@ -1,32 +1,27 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:recycle/controller/SelectedReservationInfoController.dart';
 
-class SelectedReservationInfo_TextEditController {
-  final _address = TextEditingController();
-  final _id = TextEditingController();
-  final _reserveDate = TextEditingController();
-  final _visitDate = TextEditingController();
-  final _visitTime = TextEditingController();
-}
+
 class SelectedReservationInfo extends StatefulWidget {
-  final myDocumentSnapshot_element;
+  final _currentReservation;
 
-  SelectedReservationInfo(this.myDocumentSnapshot_element);
+  SelectedReservationInfo(this._currentReservation);
   @override
   _SelectedReservationInfoState createState() => _SelectedReservationInfoState();
 }
 
-class _SelectedReservationInfoState extends State<SelectedReservationInfo> with SelectedReservationInfo_TextEditController{
+class _SelectedReservationInfoState extends State<SelectedReservationInfo>{
   @override
   void initState() {
     super.initState();
 
-    _address.text = widget.myDocumentSnapshot_element["reserveAddress"];
-    _id.text = widget.myDocumentSnapshot_element["reserveId"];
-    _visitDate.text = widget.myDocumentSnapshot_element["reserveVisitDate"];
-    _reserveDate.text = widget.myDocumentSnapshot_element["reserveDate"];
-    _visitTime.text = widget.myDocumentSnapshot_element["reserveVisitTime"];
+    selectedreservationinfoTC.address.text = widget._currentReservation["reserveAddress"];
+    selectedreservationinfoTC.id.text = widget._currentReservation["reserveId"];
+    selectedreservationinfoTC.visitDate.text = widget._currentReservation["reserveVisitDate"];
+    selectedreservationinfoTC.reserveDate.text = widget._currentReservation["reserveDate"];
+    selectedreservationinfoTC.visitTime.text = widget._currentReservation["reserveVisitTime"];
   }
 
   @override
@@ -58,7 +53,7 @@ class _SelectedReservationInfoState extends State<SelectedReservationInfo> with 
     return SafeArea(
       child: Center(
         child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(), // 스크롤 사이즈 가져오는거 같은데 정확한건 봐야 알듯.
+          // physics: const AlwaysScrollableScrollPhysics(),
           child: Container(
             height: MediaQuery.of(context).size.height + 200.0,
             child: Column(
@@ -90,7 +85,7 @@ class _SelectedReservationInfoState extends State<SelectedReservationInfo> with 
                               margin: EdgeInsets.only(right: 20),
                               child: TextField(
                                 readOnly: true,
-                                controller: _id,
+                                controller: selectedreservationinfoTC.id,
                                 style: TextStyle(color: Colors.black),
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
@@ -130,7 +125,7 @@ class _SelectedReservationInfoState extends State<SelectedReservationInfo> with 
                               margin: EdgeInsets.only(right: 20),
                               child: TextField(
                                 readOnly: true,
-                                controller: _address,
+                                controller: selectedreservationinfoTC.address,
                                 style: TextStyle(color: Colors.black),
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
@@ -170,7 +165,7 @@ class _SelectedReservationInfoState extends State<SelectedReservationInfo> with 
                               margin: EdgeInsets.only(right: 20),
                               child: TextField(
                                 readOnly: true,
-                                controller: _reserveDate,
+                                controller: selectedreservationinfoTC.reserveDate,
                                 style: TextStyle(color: Colors.black),
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
@@ -192,7 +187,7 @@ class _SelectedReservationInfoState extends State<SelectedReservationInfo> with 
                       Text("예약 상세 목록", textScaleFactor: 1.2, style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
                     ],
                   ),
-                  _buildListView(widget.myDocumentSnapshot_element),
+                  _buildListView(widget._currentReservation),
                   Padding(padding: EdgeInsets.all(5.0)),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -201,7 +196,7 @@ class _SelectedReservationInfoState extends State<SelectedReservationInfo> with 
                       Text("물품 사진", textScaleFactor: 1.2, style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
                     ],
                   ),
-                  _buildMyTrashImages(widget.myDocumentSnapshot_element),
+                  _buildMyTrashImages(widget._currentReservation),
                   Padding(padding: EdgeInsets.all(5.0)),
                   Flexible(
                     // VisitDate
@@ -229,7 +224,7 @@ class _SelectedReservationInfoState extends State<SelectedReservationInfo> with 
                               margin: EdgeInsets.only(right: 20),
                               child: TextField(
                                 readOnly: true,
-                                controller: _visitDate,
+                                controller: selectedreservationinfoTC.visitDate,
                                 style: TextStyle(color: Colors.black),
                                 decoration: InputDecoration(
                                   border: InputBorder.none,
@@ -269,7 +264,7 @@ class _SelectedReservationInfoState extends State<SelectedReservationInfo> with 
                               margin: EdgeInsets.only(right: 20),
                               child: TextField(
                                 readOnly: true,
-                                controller: _visitTime,
+                                controller: selectedreservationinfoTC.visitTime,
                                 style: TextStyle(color: Colors.black),
                                 decoration: InputDecoration(
                                   border: InputBorder.none,

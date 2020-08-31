@@ -1,40 +1,15 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
-import 'package:kopo/kopo.dart';
-import 'package:random_string/random_string.dart';
-import 'package:recycle/model/MyHTTPhost.dart';
+import 'package:recycle/controller/AccessMyFirestore.dart';
+import 'package:recycle/controller/InternetCheckController.dart';
+import 'package:recycle/controller/SignUpController.dart';
 
-class signup_text_editing_controller {
-  final _id = TextEditingController();
-  final _pw = TextEditingController();
-  final _name = TextEditingController();
-  final _address = TextEditingController();
-  final _remaining_address = TextEditingController();
-  final _phoneNum = TextEditingController();
-  final _email = TextEditingController();
-  final _comfilm = TextEditingController();
-  String _authcode;
-
-  // 0 : id,  1 : authentication code
-  List<bool> valid_condition_List = [false, false];
-}
-
-class SignUp extends StatelessWidget with signup_text_editing_controller {
-  StreamController _myCheckboxController = StreamController<bool>()..add(false);
-  bool _myCheckbox = false;
-
-  // DB Driver
-  final _db = Firestore.instance;
-
+class SignUp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      // resizeToAvoidBottomPadding: false,
       appBar: AppBar(
         leading: IconButton(
             icon: Icon(
@@ -64,8 +39,7 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
         child: Center(
       child: SingleChildScrollView(
         child: Container(
-          // height: MediaQuery.of(context).size.height,
-          height: 800.0,
+          height: MediaQuery.of(context).size.height,
           child: Column(
             children: <Widget>[
               Flexible(
@@ -93,7 +67,7 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
                         child: Container(
                           margin: EdgeInsets.only(right: 20),
                           child: TextField(
-                            controller: _id,
+                            controller: signupTC.id,
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
@@ -121,26 +95,13 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
                       ),
                     ),
                     onPressed: () {
-                      _checkInternetAccess().then((bool onValue) {
+                      myInternetCheck
+                          .checkInternetAccess(context)
+                          .then((bool onValue) {
                         if (onValue) {
-                          checkmyId(context);
+                          signupC.checkmyId(context);
                         } else {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('인터넷 연결 오류'),
-                                content: Text('인터넷 연결 상태를 확인 바랍니다.'),
-                                actions: <Widget>[
-                                  FlatButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text('Confirm')),
-                                ],
-                              );
-                            },
-                          );
+                          myInternetCheck.errorMsg(context);
                         }
                       });
                     },
@@ -174,7 +135,7 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
                           margin: EdgeInsets.only(right: 20),
                           child: TextField(
                             obscureText: true, //비밀번호 텍스트 필드
-                            controller: _pw,
+                            controller: signupTC.pw,
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
@@ -213,7 +174,7 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
                         child: Container(
                           margin: EdgeInsets.only(right: 20),
                           child: TextField(
-                            controller: _name,
+                            controller: signupTC.name,
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
@@ -253,7 +214,7 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
                           margin: EdgeInsets.only(right: 20),
                           child: TextField(
                             readOnly: true,
-                            controller: _address,
+                            controller: signupTC.address,
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               hintText: "직접 입력을 누르세요.",
@@ -297,7 +258,7 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
                           margin: EdgeInsets.only(right: 20),
                           child: TextField(
                             readOnly: false,
-                            controller: _remaining_address,
+                            controller: signupTC.remaining_address,
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
@@ -325,26 +286,13 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
                         ),
                       ),
                       onPressed: () async {
-                        _checkInternetAccess().then((bool onValue) {
+                        myInternetCheck
+                            .checkInternetAccess(context)
+                            .then((bool onValue) {
                           if (onValue) {
-                            _loadMyAddress(context);
+                            signupC.loadMyAddress(context);
                           } else {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('인터넷 연결 오류'),
-                                  content: Text('인터넷 연결 상태를 확인 바랍니다.'),
-                                  actions: <Widget>[
-                                    FlatButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text('Confirm')),
-                                  ],
-                                );
-                              },
-                            );
+                            myInternetCheck.errorMsg(context);
                           }
                         });
                       }),
@@ -376,7 +324,7 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
                         child: Container(
                           margin: EdgeInsets.only(right: 20),
                           child: TextField(
-                            controller: _phoneNum,
+                            controller: signupTC.phoneNum,
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
@@ -416,7 +364,7 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
                         child: Container(
                           margin: EdgeInsets.only(right: 20),
                           child: TextField(
-                            controller: _email,
+                            controller: signupTC.email,
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
@@ -444,27 +392,14 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
                         ),
                       ),
                       onPressed: () {
-                        _checkInternetAccess().then((bool onValue) {
+                        myInternetCheck
+                            .checkInternetAccess(context)
+                            .then((bool onValue) {
                           if (onValue) {
                             // call node emailer
-                            _emailSending(context);
+                            signupC.emailSending(context);
                           } else {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('인터넷 연결 오류'),
-                                  content: Text('인터넷 연결 상태를 확인 바랍니다.'),
-                                  actions: <Widget>[
-                                    FlatButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: Text('Confirm')),
-                                  ],
-                                );
-                              },
-                            );
+                            myInternetCheck.errorMsg(context);
                           }
                         });
                       }),
@@ -496,7 +431,7 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
                         child: Container(
                           margin: EdgeInsets.only(right: 20),
                           child: TextField(
-                            controller: _comfilm,
+                            controller: signupTC.confirm,
                             style: TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               border: InputBorder.none,
@@ -524,42 +459,13 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
                       ),
                     ),
                     onPressed: () async {
-                      checkmyAuthCode().then((onValue) {
+                      signupC.checkmyAuthCode().then((onValue) {
                         if (onValue) {
-                          valid_condition_List[1] = true;
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('SUCCESS'),
-                                content: Text('인증이 완료되었습니다!'),
-                                actions: <Widget>[
-                                  FlatButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text('Confirm')),
-                                ],
-                              );
-                            },
-                          );
+                          signupTC.valid_condition_List[1] = true;
+
+                          signupC.signupC_dialogue(context, "AUTH_SUCCESS");
                         } else {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('ERROR'),
-                                content: Text('인증코드가 유효하지 않습니다.'),
-                                actions: <Widget>[
-                                  FlatButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text('Confirm')),
-                                ],
-                              );
-                            },
-                          );
+                          signupC.signupC_dialogue(context, "ERROR");
                         }
                       });
                     },
@@ -580,118 +486,42 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
                   ),
                 ),
                 onPressed: () {
-                  // checkValidInput().then((value) => insertionUserDB());
-                  var my_switch_value = checkValidInput();
+                  var my_switch_value = signupC.checkValidInput();
                   switch (my_switch_value) {
                     // 전부 유효한 입력의 경우... (이 경우에만 회원가입을 진행한다.)
                     case 0:
-                      _checkInternetAccess().then((onValue) {
+                      myInternetCheck
+                          .checkInternetAccess(context)
+                          .then((onValue) {
                         if (onValue) {
-                          var doc = _db.collection('user').document();
+                          var doc =
+                              myFirestore.db.collection('user').document();
 
                           doc.setData({
-                            "id": _id.text,
-                            "pw": _pw.text,
-                            "name": _name.text,
-                            "address":
-                                _address.text + " " + _remaining_address.text,
-                            "phoneNum": _phoneNum.text,
-                            "email": _email.text,
+                            "id": signupTC.id.text,
+                            "pw": signupTC.pw.text,
+                            "name": signupTC.name.text,
+                            "address": signupTC.address.text +
+                                " " +
+                                signupTC.remaining_address.text,
+                            "phoneNum": signupTC.phoneNum.text,
+                            "email": signupTC.email.text,
                           }).then((value) {
-                            showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text('SUCCESS'),
-                                  content: Text('회원가입이 완료되었습니다.'),
-                                  actions: <Widget>[
-                                    FlatButton(
-                                        onPressed: () {
-                                          Navigator.popAndPushNamed(
-                                              context, '/MainPage');
-                                        },
-                                        child: Text('Confirm')),
-                                  ],
-                                );
-                              },
-                            );
+                            signupC.signupC_dialogue(context, "REG_NO_0");
                           });
                         } else {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return AlertDialog(
-                                title: Text('인터넷 연결 오류'),
-                                content: Text('인터넷 연결 상태를 확인 바랍니다.'),
-                                actions: <Widget>[
-                                  FlatButton(
-                                      onPressed: () {
-                                        Navigator.of(context).pop();
-                                      },
-                                      child: Text('Confirm')),
-                                ],
-                              );
-                            },
-                          );
+                          myInternetCheck.errorMsg(context);
                         }
                       });
                       break;
-                    // 인증코드만 불 일치하는 경우...
                     case 1:
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('ERROR'),
-                            content: Text('인증코드를 다시 확인해주세요.'),
-                            actions: <Widget>[
-                              FlatButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Confirm')),
-                            ],
-                          );
-                        },
-                      );
+                      signupC.signupC_dialogue(context, "REG_NO_1");
                       break;
-                    // 아이디 검사가 이루어지지 않은 경우...
                     case 2:
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('ERROR'),
-                            content: Text('아이디 중복을 체크 해주세요.'),
-                            actions: <Widget>[
-                              FlatButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Confirm')),
-                            ],
-                          );
-                        },
-                      );
+                      signupC.signupC_dialogue(context, "REG_NO_2");
                       break;
-                    // 전부 이루어지지 않은 경우...
                     case 3:
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('ERROR'),
-                            content: Text('아이디와 인증코드를 \n다시 확인해주세요.'),
-                            actions: <Widget>[
-                              FlatButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Confirm')),
-                            ],
-                          );
-                        },
-                      );
+                      signupC.signupC_dialogue(context, "REG_NO_3");
                       break;
                     default:
                       break;
@@ -703,174 +533,5 @@ class SignUp extends StatelessWidget with signup_text_editing_controller {
         ),
       ),
     ));
-  }
-
-  void switch_myCheckbox() {
-    _myCheckbox = (_myCheckbox == true) ? false : true;
-
-    _myCheckboxController.add(_myCheckbox);
-
-    return;
-  }
-
-  // 유효한 입력인지 검사하는 메소드
-  int checkValidInput() {
-    if (valid_condition_List[0] && valid_condition_List[1]) {
-      return 0;
-    } else if (valid_condition_List[0] && !valid_condition_List[1]) {
-      return 1;
-    } else if (!valid_condition_List[0] && valid_condition_List[1]) {
-      return 2;
-    } else if (!valid_condition_List[0] && !valid_condition_List[1]) {
-      return 3;
-    }
-  }
-
-  // User DTO를 Firestore 'user'컬렉션에 삽입하는 메소드.
-  Future<void> insertionUserDB() async {
-    return;
-  }
-
-  // 중복확인 시, 중복되는 아이디가 있는지 체크함.
-  Future<void> checkmyId(BuildContext context) async {
-    if (_id.text.length == 0) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('ERROR'),
-            content: Text('아이디를 입력하세요.'),
-            actions: <Widget>[
-              FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('Confirm')),
-            ],
-          );
-        },
-      );
-    } else {
-      final QuerySnapshot result = await _db
-          .collection('user')
-          .where('id', isEqualTo: _id.text)
-          .limit(1)
-          .getDocuments();
-      final List<DocumentSnapshot> documents = result.documents;
-      if (documents.length == 1) {
-        // 중복되는 아이디가 존재함.
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('중복 오류'),
-              content: Text('이미 존재하는 아이디 입니다.'),
-              actions: <Widget>[
-                FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Confirm')),
-              ],
-            );
-          },
-        );
-      } else {
-        valid_condition_List[0] = true;
-        // 중복되는 아이디가 존재하지 않음.
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: null,
-              content: Text('사용 가능한 아이디 입니다.'),
-              actions: <Widget>[
-                FlatButton(
-                    onPressed: () {
-                      // 아이디 유효함 ON.
-                      valid_condition_List[0] = true;
-
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('Confirm')),
-              ],
-            );
-          },
-        );
-      }
-    }
-
-    return;
-  }
-
-  // 인증코드가 맞는지 체크하는 메소드.
-  Future<bool> checkmyAuthCode() async {
-    return (_comfilm.text == _authcode) ? true : false;
-  }
-
-  Future<bool> _checkInternetAccess() async {
-    try {
-      final result = await InternetAddress.lookup('google.com');
-      if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        print('Connected');
-        return true;
-      }
-    } on SocketException catch (_) {
-      return false;
-    }
-  }
-
-  Future<void> _loadMyAddress(BuildContext context) async {
-    KopoModel model = await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Kopo(),
-        ));
-    print(model?.toJson());
-    if (model?.toJson()?.isNotEmpty) {
-      _address.text =
-          '${model.address} ${model.buildingName}${model.apartment == 'Y' ? '아파트' : ''} ${model.zonecode} ';
-      print('My Address is' + _address.text);
-    }
-
-    return;
-  }
-
-  _emailSending(BuildContext context) async {
-    _authcode = randomAlpha(6);
-    print('코드값은 ? ' + _authcode);
-
-    // POST 방식으로 서버에 이메일 전송 요청.
-    var res = await http
-        .post(API_PREFIX + "/create-mailer",
-            headers: <String, String>{
-              'Content-Type': 'application/json; charset=UTF-8',
-            },
-            body: jsonEncode(
-                <String, dynamic>{"code": _authcode, "email": _email.text}))
-        .catchError((err) {
-      print(err);
-    });
-    if (res.statusCode == 201) {
-      print(res.statusCode);
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('SUCCESS'),
-            content: Text('이메일을 정상적으로 전송했습니다.'),
-            actions: <Widget>[
-              FlatButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text('Confirm')),
-            ],
-          );
-        },
-      );
-    } else {
-      print("Connection Failed...");
-    }
   }
 }

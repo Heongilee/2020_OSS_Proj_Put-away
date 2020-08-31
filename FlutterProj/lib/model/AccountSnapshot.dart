@@ -35,7 +35,7 @@ class TakingPicture_AccountSnapshot extends AccountSnapshot {
       : super(currentAccount);
 }
 
-class TrashListComfirmation_AccounSnapshot extends AccountSnapshot {
+class TrashListConfirmation_AccounSnapshot extends AccountSnapshot {
   List<File> _listViewItem; // 이미지 파일 리스트
   final current_Idx; // 현재 페이지 인덱스
   Map<int, List<String>>
@@ -51,7 +51,7 @@ class TrashListComfirmation_AccounSnapshot extends AccountSnapshot {
   int get totalPrice => _totalPrice;
   set totalPrice(int totalPrice) => this._totalPrice = totalPrice;
 
-  TrashListComfirmation_AccounSnapshot(
+  TrashListConfirmation_AccounSnapshot(
       DocumentSnapshot currentAccount,
       this._listViewItem,
       this.current_Idx,

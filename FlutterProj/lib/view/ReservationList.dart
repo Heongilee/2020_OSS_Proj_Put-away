@@ -1,15 +1,12 @@
-// TODO : 예약 조회 내역을 클릭하면 사진과 함께 예약 상세 페이지에서 조회하도록.
-import 'dart:async';
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:recycle/model/ReservationDTO.dart';
+import 'package:recycle/controller/AccessMyFirestore.dart';
+import 'package:recycle/view/Consts.dart';
 import 'package:recycle/view/SelectedReservationInfo.dart';
 
 class ReservationList extends StatefulWidget {
   final DocumentSnapshot _currentAccount;
-  // 로그인 세션
+  // 로그인 
   ReservationList(this._currentAccount);
 
   @override
@@ -17,11 +14,6 @@ class ReservationList extends StatefulWidget {
 }
 
 class _ReservationListState extends State<ReservationList> {
-  final _db = Firestore.instance;
-  QuerySnapshot _qs;
-
-  // final _statusList = ["접수 완료", "처리중...", "처리 완료"];
-
   // DataTable
   List<DataColumn> dataColumn;
   List<DataRow> dataRow;
@@ -56,7 +48,7 @@ class _ReservationListState extends State<ReservationList> {
     return SafeArea(
       child: Center(
         child: StreamBuilder<QuerySnapshot>(
-            stream: _db
+            stream: myFirestore.db
                 .collection('reservation')
                 .where("reserveId",
                     isEqualTo: widget._currentAccount.data['id'])
@@ -84,8 +76,8 @@ class _ReservationListState extends State<ReservationList> {
       // TODO : 스택 오버플로우 사이트 참고해서 Sorting 익히기.
       sortColumnIndex: 0,
       sortAscending: true,
-      horizontalMargin: 12.0,
-      columnSpacing: 24.0,
+      horizontalMargin: Consts.reservationlist_DataTable_horizontalMargin,
+      columnSpacing: Consts.reservationlist_DataTable_columnSpacing,
       columns: _getDataColumns(),
       rows: _getDataRows(myQ),
       showCheckboxColumn: false,
@@ -99,7 +91,7 @@ class _ReservationListState extends State<ReservationList> {
       style: TextStyle(
           fontWeight: FontWeight.bold,
           fontStyle: FontStyle.italic,
-          fontSize: 16.0),
+          fontSize: Consts.reservationlist_dataColumn_fontSize),
       textAlign: TextAlign.center,
     )));
     dataColumn.add(DataColumn(
@@ -108,7 +100,7 @@ class _ReservationListState extends State<ReservationList> {
       style: TextStyle(
           fontWeight: FontWeight.bold,
           fontStyle: FontStyle.italic,
-          fontSize: 16.0),
+          fontSize: Consts.reservationlist_dataColumn_fontSize),
       textAlign: TextAlign.center,
     )));
     dataColumn.add(DataColumn(
@@ -117,7 +109,7 @@ class _ReservationListState extends State<ReservationList> {
       style: TextStyle(
           fontWeight: FontWeight.bold,
           fontStyle: FontStyle.italic,
-          fontSize: 16.0),
+          fontSize: Consts.reservationlist_dataColumn_fontSize),
       textAlign: TextAlign.center,
     )));
 

@@ -1,18 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:recycle/model/AccountSnapshot.dart';
 import 'package:recycle/view/HomePage.dart';
 import 'package:recycle/view/MyInfo.dart';
 import 'package:recycle/view/ReservationList.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TabPage extends StatefulWidget {
   static const routeName = '/TabPage';
-
-  // final DocumentSnapshot _currentAccount;
-
-  // TabPage(this._currentAccount);
 
   @override
   _TabPageState createState() => _TabPageState();
@@ -25,12 +18,6 @@ class _TabPageState extends State<TabPage> {
   @override
   void initState() {
     super.initState();
-
-    // _pages = [
-    //   HomePage(widget._currentAccount),
-    //   ReservationList(widget._currentAccount),
-    //   MyInfo(widget._currentAccount),
-    // ];
   }
 
   @override
